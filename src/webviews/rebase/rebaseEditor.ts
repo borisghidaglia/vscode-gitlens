@@ -56,7 +56,8 @@ const ipcSequencer = getScopedCounter();
 const webviewIdGenerator = getScopedCounter();
 
 const rebaseRegex = /^\s?#\s?Rebase\s([0-9a-f]+)(?:..([0-9a-f]+))?\sonto\s([0-9a-f]+)\s.*$/im;
-const rebaseCommandsRegex = /^\s?(p|pick|r|reword|e|edit|s|squash|f|fixup|d|drop)\s([0-9a-f]+?)\s(.*)$/gm;
+const rebaseCommandsRegex =
+	/^\s?(p|pick|r|reword|e|edit|s|squash|f|fixup|d|drop)\s([0-9a-f]+?)\s(.*)(?:\n(?:u|update-ref)\s(.*))?$/gm;
 
 const rebaseActionsMap = new Map<string, RebaseEntryAction>([
 	['p', 'pick'],
@@ -705,12 +706,13 @@ function parseRebaseTodoEntries(contentsOrDocument: string | TextDocument): Reba
 	let action;
 	let sha;
 	let message;
+	let ref;
 
 	do {
 		match = rebaseCommandsRegex.exec(contents);
 		if (match == null) break;
 
-		[, action, sha, message] = match;
+		[, action, sha, message, ref] = match;
 
 		entries.push({
 			index: match.index,
@@ -719,6 +721,7 @@ function parseRebaseTodoEntries(contentsOrDocument: string | TextDocument): Reba
 			sha: ` ${sha}`.substr(1),
 			// Stops excessive memory usage -- https://bugs.chromium.org/p/v8/issues/detail?id=2869
 			message: message == null || message.length === 0 ? '' : ` ${message}`.substr(1),
+			ref: ref,
 		});
 	} while (true);
 

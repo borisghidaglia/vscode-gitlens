@@ -20,6 +20,7 @@ export interface RebaseEntry {
 	readonly sha: string;
 	readonly message: string;
 	readonly index: number;
+	readonly ref?: string;
 
 	commit?: Commit;
 }

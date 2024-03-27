@@ -496,6 +496,9 @@ class RebaseEditor extends App<State> {
 		$message.classList.add('entry-message');
 		const message = commit?.message.trim() ?? entry.message.trim();
 		$message.textContent = message.replace(/\n+(?:\s+\n+)?/g, ' | ');
+		if (entry.ref) {
+			$message.textContent += ` | update-ref: ${entry.ref}`;
+		}
 		$message.title = message;
 		$content.appendChild($message);
 
